@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Beautiful
 {
@@ -241,8 +238,9 @@ namespace Beautiful
             return rgbColor;
         }
         #endregion
+
         private static KeyValuePair<Color, ConsoleColor>[] Colors = null;
-        private static int CURRENT_COLOR_SLOT = 1;
+        private static int CURRENT_COLOR_SLOT = 1; //black is common background color and is 0th.
         private const int MAX_COLORS = 16;
 
         public ColorMapper()

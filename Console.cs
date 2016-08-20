@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
+using System.Drawing;
+using System.Security;
 
 namespace Beautiful
 {
@@ -26,16 +23,10 @@ namespace Beautiful
             action.Invoke(value, arg0);
             System.Console.ResetColor();
         }
-        private static void WriteInColor<T,A>(Action<T, A, A> action, T value, A arg0, A arg1, Color color)
+        private static void WriteInColor<T, A>(Action<T, A, A> action, T value, A arg0, A arg1, Color color)
         {
             System.Console.ForegroundColor = colorMapper.GetMappedConsoleColor(color);
             action.Invoke(value, arg0, arg1);
-            System.Console.ResetColor();
-        }
-        private static void WriteInColor<T,A>(Action<T, A, A, A> action, T value, A arg0, A arg1, A arg2, Color color)
-        {
-            System.Console.ForegroundColor = colorMapper.GetMappedConsoleColor(color);
-            action.Invoke(value, arg0, arg1, arg2);
             System.Console.ResetColor();
         }
 
@@ -108,7 +99,7 @@ namespace Beautiful
         }
         public static void Write(string format, object arg0, object arg1, Color foregroundColor)
         {
-            WriteInColor(System.Console.Write, format, arg0, arg1, foregroundColor);
+            WriteInColor(System.Console.Write, format, new object[] { arg0, arg1 }, foregroundColor);
         }
         public static void Write(char[] buffer, int index, int count, Color foregroundColor)
         {
@@ -116,7 +107,7 @@ namespace Beautiful
         }
         public static void Write(string format, object arg0, object arg1, object arg2, Color foregroundColor)
         {
-            WriteInColor(System.Console.Write, format, arg0, arg1, arg2, foregroundColor);
+            WriteInColor(System.Console.Write, format, new object[] { arg0, arg1, arg2 }, foregroundColor);
         }
         public static void Write(string format, object arg0, object arg1, object arg2, object arg3, Color foregroundColor)
         {
@@ -180,7 +171,7 @@ namespace Beautiful
         }
         public static void WriteLine(string format, object arg0, object arg1, Color foregroundColor)
         {
-            WriteInColor(System.Console.WriteLine, format, arg0, arg1, foregroundColor);
+            WriteInColor(System.Console.WriteLine, format, new object[] { arg0, arg1 }, foregroundColor);
         }
         public static void WriteLine(char[] buffer, int index, int count, Color foregroundColor)
         {
@@ -188,13 +179,18 @@ namespace Beautiful
         }
         public static void WriteLine(string format, object arg0, object arg1, object arg2, Color foregroundColor)
         {
-            WriteInColor(System.Console.WriteLine, format, arg0, arg1, arg2, foregroundColor);
+            WriteInColor(System.Console.WriteLine, format, new object[] { arg0, arg1, arg2 }, foregroundColor);
         }
         public static void WriteLine(string format, object arg0, object arg1, object arg2, object arg3, Color foregroundColor)
         {
             WriteInColor(System.Console.WriteLine, format, new object[] { arg0, arg1, arg2, arg3 }, foregroundColor);
         }
-        //[SecuritySafeCritical]MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop, char sourceChar, ConsoleColor sourceForeColor, ConsoleColor sourceBackColor)
+        public static void MoveBufferArea(int sourceLeft, int sourceTop, int sourceWidth, int sourceHeight, int targetLeft, int targetTop, char sourceChar, Color sourceForeColor, Color sourceBackColor)
+        {
+            ConsoleColor foreColor = colorMapper.GetMappedConsoleColor(sourceForeColor);
+            ConsoleColor backColor = colorMapper.GetMappedConsoleColor(sourceBackColor);
+            System.Console.MoveBufferArea(sourceLeft, sourceTop, sourceWidth, sourceHeight, targetLeft, targetTop, sourceChar, foreColor, backColor);
+        }
         #endregion
 
         #region native console functions
@@ -242,7 +238,7 @@ namespace Beautiful
             get { return System.Console.InputEncoding; }
             set { System.Console.InputEncoding = value;  }
         }
-        #if !NET45
+        #if NET45
         public static bool IsErrorRedirected {
             get { return System.Console.IsErrorRedirected; }
         }
